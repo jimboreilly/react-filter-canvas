@@ -48,6 +48,63 @@ const FilteredCanvas = ({ imageRef }) => {
 		}
 	}
 
+	const sobelX = [
+		[1, 0, -1],
+		[2, 0, -2],
+		[1, 0, -1]
+	]
+
+	const sobelY = [
+		[1, 2, 1],
+		[0, 0, 0],
+		[-1, -2, -1]
+	]
+
+	const getConvulotionAreaAboutAnchor = (x, y) => {
+		const anchor = getPixelStartIndex(x, y)
+		return [
+			[anchor - (width * 4) - 4, anchor - (width * 4), anchor - (width * 4) + 4],
+			[anchor - 4, anchor, anchor + 4],
+			[anchor + (width * 4) - 4, anchor + (width * 4), anchor + (width * 4) + 4]
+		]
+	}
+
+	const convolveAboutAnchor = (row, column, kernal) => {
+		const neighborhood = getConvulotionAreaAboutAnchor(row, column);
+		return (kernal[0][0] * imageData[neighborhood[0][0]]) +
+			(kernal[0][1] * imageData[neighborhood[0][1]]) +
+			(kernal[0][2] * imageData[neighborhood[0][2]]) +
+			(kernal[1][0] * imageData[neighborhood[1][0]]) +
+			(kernal[1][1] * imageData[neighborhood[1][1]]) +
+			(kernal[1][2] * imageData[neighborhood[1][2]]) +
+			(kernal[2][0] * imageData[neighborhood[2][0]]) +
+			(kernal[2][1] * imageData[neighborhood[2][1]]) +
+			(kernal[2][2] * imageData[neighborhood[2][2]])
+	}
+
+	const convolve = () => {
+		const currentCanvas = canvas.current;
+		const context = currentCanvas.getContext('2d')
+
+		const newImageData = Uint8ClampedArray.from(imageData)
+
+		for (var i = 1; i < (width - 1); i++) {
+			for (var j = 1; j < (height - 1); j++) {
+				const Gx = convolveAboutAnchor(i, j, sobelX);
+				const Gy = convolveAboutAnchor(i, j, sobelY);
+
+				const redIndex = getPixelStartIndex(i, j);
+				const G = Math.sqrt(Math.pow(Gx, 2) + Math.pow(Gy, 2))
+				newImageData[redIndex] = G;
+				newImageData[redIndex + 1] = G;
+				newImageData[redIndex + 2] = G;
+			}
+		}
+
+		setImageData(newImageData)
+		context.putImageData(new ImageData(newImageData, width, height), 0, 0)
+	}
+
 	const draw = () => {
 		const currentCanvas = canvas.current;
 		const context = currentCanvas.getContext('2d')
@@ -71,6 +128,10 @@ const FilteredCanvas = ({ imageRef }) => {
 
 	return (
 		<div>
+			<div>
+				<button onClick={() => draw()}>Grayscale</button>
+				<button onClick={() => convolve()}>Sobel</button>
+			</div>
 			<canvas id="test" ref={canvas} onClick={() => draw()}></canvas>
 		</div >
 	)
