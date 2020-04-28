@@ -13,15 +13,13 @@ const FilteredCanvas = ({ imageRef }) => {
 
 		const image = imageRef.current
 
-		image.onload = function () {
+		image.onload = () => {
 			currentCanvas.width = image.width;
 			currentCanvas.height = image.height;
 			context.drawImage(image, 0, 0)
 			setImageData(context.getImageData(0, 0, currentCanvas.width, currentCanvas.height).data)
 			setWidth(currentCanvas.width);
 			setHeight(currentCanvas.height);
-			console.log(imageData)
-			console.log(context.getImageData(0, 0, currentCanvas.width, currentCanvas.height).data)
 		}
 	}, [])
 
@@ -94,7 +92,7 @@ const FilteredCanvas = ({ imageRef }) => {
 				const Gy = convolveAboutAnchor(i, j, sobelY);
 
 				const redIndex = getPixelStartIndex(i, j);
-				const G = Math.sqrt(Math.pow(Gx, 2) + Math.pow(Gy, 2))
+				const G = 255 - Math.sqrt(Math.pow(Gx, 2) + Math.pow(Gy, 2))
 				newImageData[redIndex] = G;
 				newImageData[redIndex + 1] = G;
 				newImageData[redIndex + 2] = G;
@@ -103,6 +101,18 @@ const FilteredCanvas = ({ imageRef }) => {
 
 		setImageData(newImageData)
 		context.putImageData(new ImageData(newImageData, width, height), 0, 0)
+	}
+
+	const reset = () => {
+		const currentCanvas = canvas.current;
+		const context = currentCanvas.getContext('2d')
+
+		const image = imageRef.current
+
+		currentCanvas.width = image.width;
+		currentCanvas.height = image.height;
+		context.drawImage(image, 0, 0)
+		setImageData(context.getImageData(0, 0, width, height).data)
 	}
 
 	const draw = () => {
@@ -129,10 +139,12 @@ const FilteredCanvas = ({ imageRef }) => {
 	return (
 		<div>
 			<div>
+				<button onClick={() => reset()}>Reset</button>
+				<span> | </span>
 				<button onClick={() => draw()}>Grayscale</button>
 				<button onClick={() => convolve()}>Sobel</button>
 			</div>
-			<canvas id="test" ref={canvas} onClick={() => draw()}></canvas>
+			<canvas id="filtered" ref={canvas}></canvas>
 		</div >
 	)
 }
