@@ -1,15 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useRef } from 'react';
+import starry from './starry_night.jpg';
 import './App.css';
 import { FilteredCanvas } from './components'
 
-const App = () =>
-  <div className="App">
+const App = () => {
+
+  const img = useRef(null)
+
+  return (< div className="App" >
     <header className="App-header">
-      <div> foo </div>
-      <FilteredCanvas></FilteredCanvas>
+      <div>original</div>
+      <img id="original" ref={img} src={starry}></img>
+      <div>filtered</div>
+      <FilteredCanvas imageRef={img}></FilteredCanvas>
     </header>
-  </div>
+  </div >)
+}
 
 
 export default App;

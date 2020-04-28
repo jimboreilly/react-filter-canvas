@@ -1,21 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const FilteredCanvas = ({ src }) => {
+const FilteredCanvas = ({ imageRef }) => {
 	const canvas = useRef(null);
 
-	const test = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/800px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg"
+	const [imageData, setImageData] = useState();
 
 	useEffect(() => {
 		const current = canvas.current;
 		const context = current.getContext('2d')
-		const img = new Image();
-		img.src = test
-		img.onload = function () {
-			current.width = img.width;
-			current.height = img.height;
-			context.drawImage(img, 0, 0)
+
+		const image = imageRef.current
+
+		image.onload = function () {
+			current.width = image.width;
+			current.height = image.height;
+			context.drawImage(image, 0, 0)
+			setImageData(context.getImageData(0, 0, current.width, current.height))
 		}
-	})
+	}, [])
 
 
 	return (
