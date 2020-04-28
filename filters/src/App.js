@@ -10,7 +10,7 @@ const App = () => {
   return (< div className="App" >
     <header className="App-header">
       <div>original</div>
-      <img id="original" ref={img} src={starry}></img>
+      <img alt="starry night" id="original" ref={img} src={starry}></img>
       <div>filtered</div>
       <FilteredCanvas imageRef={img}></FilteredCanvas>
     </header>
