@@ -102,12 +102,16 @@ const FilteredCanvas = ({ imageRef }) => {
 		[0, 1, 0],
 		[0, 0, 0]
 	]
+	const doubleOriginalKernal = [
+		[0, 0, 0],
+		[0, 2, 0],
+		[0, 0, 0]
+	]
 
 	const sharpen = (i, j) => {
-		const original = convolveAboutAnchor(i, j, identityKernal);
+		const doubleOriginal = convolveAboutAnchor(i, j, doubleOriginalKernal);
 		const smoothed = smooth(i, j)
-
-		return original - smoothed;
+		return doubleOriginal - smoothed;
 	}
 
 	const convolve = (transformation) => {
