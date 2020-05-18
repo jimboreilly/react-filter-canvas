@@ -97,6 +97,19 @@ const FilteredCanvas = ({ imageRef }) => {
 		return convolveAboutAnchor(i, j, smoothKernal) / 9;
 	}
 
+	const identityKernal = [
+		[0, 0, 0],
+		[0, 1, 0],
+		[0, 0, 0]
+	]
+
+	const sharpen = (i, j) => {
+		const original = convolveAboutAnchor(i, j, identityKernal);
+		const smoothed = smooth(i, j)
+
+		return original - smoothed;
+	}
+
 	const convolve = (transformation) => {
 		const currentCanvas = canvas.current;
 		const context = currentCanvas.getContext('2d')
@@ -158,6 +171,7 @@ const FilteredCanvas = ({ imageRef }) => {
 				<button onClick={() => draw()}>Grayscale</button>
 				<button onClick={() => convolve(sobel)}>Sobel</button>
 				<button onClick={() => convolve(smooth)}>Smooth</button>
+				<button onClick={() => convolve(sharpen)}>Sharpen</button>
 			</div>
 			<canvas id="filtered" ref={canvas}></canvas>
 		</div >
