@@ -46,18 +46,6 @@ const FilteredCanvas = ({ imageRef }) => {
 		}
 	}
 
-	const sobelX = [
-		[1, 0, -1],
-		[2, 0, -2],
-		[1, 0, -1]
-	]
-
-	const sobelY = [
-		[1, 2, 1],
-		[0, 0, 0],
-		[-1, -2, -1]
-	]
-
 	const getConvulotionAreaAboutAnchor = (x, y) => {
 		const anchor = getPixelStartIndex(x, y)
 		return [
@@ -80,7 +68,36 @@ const FilteredCanvas = ({ imageRef }) => {
 			(kernal[2][2] * imageData[neighborhood[2][2]])
 	}
 
-	const convolve = () => {
+	const sobelX = [
+		[1, 0, -1],
+		[2, 0, -2],
+		[1, 0, -1]
+	]
+
+	const sobelY = [
+		[1, 2, 1],
+		[0, 0, 0],
+		[-1, -2, -1]
+	]
+
+	const sobel = (i, j) => {
+		const Gx = convolveAboutAnchor(i, j, sobelX);
+		const Gy = convolveAboutAnchor(i, j, sobelY);
+
+		return 255 - Math.sqrt(Math.pow(Gx, 2) + Math.pow(Gy, 2))
+	}
+
+	const smoothKernal = [
+		[1, 1, 1],
+		[1, 1, 1],
+		[1, 1, 1]
+	]
+
+	const smooth = (i, j) => {
+		return convolveAboutAnchor(i, j, smoothKernal) / 9;
+	}
+
+	const convolve = (transformation) => {
 		const currentCanvas = canvas.current;
 		const context = currentCanvas.getContext('2d')
 
@@ -88,11 +105,8 @@ const FilteredCanvas = ({ imageRef }) => {
 
 		for (var i = 1; i < (width - 1); i++) {
 			for (var j = 1; j < (height - 1); j++) {
-				const Gx = convolveAboutAnchor(i, j, sobelX);
-				const Gy = convolveAboutAnchor(i, j, sobelY);
-
+				const G = transformation(i, j);
 				const redIndex = getPixelStartIndex(i, j);
-				const G = 255 - Math.sqrt(Math.pow(Gx, 2) + Math.pow(Gy, 2))
 				newImageData[redIndex] = G;
 				newImageData[redIndex + 1] = G;
 				newImageData[redIndex + 2] = G;
@@ -142,7 +156,8 @@ const FilteredCanvas = ({ imageRef }) => {
 				<button onClick={() => reset()}>Reset</button>
 				<span> | </span>
 				<button onClick={() => draw()}>Grayscale</button>
-				<button onClick={() => convolve()}>Sobel</button>
+				<button onClick={() => convolve(sobel)}>Sobel</button>
+				<button onClick={() => convolve(smooth)}>Smooth</button>
 			</div>
 			<canvas id="filtered" ref={canvas}></canvas>
 		</div >
