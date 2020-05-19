@@ -102,14 +102,9 @@ const FilteredCanvas = ({ imageRef }) => {
 		[0, 1, 0],
 		[0, 0, 0]
 	]
-	const doubleOriginalKernal = [
-		[0, 0, 0],
-		[0, 2, 0],
-		[0, 0, 0]
-	]
 
 	const sharpen = (i, j) => {
-		const doubleOriginal = convolveAboutAnchor(i, j, doubleOriginalKernal);
+		const doubleOriginal = 2 * convolveAboutAnchor(i, j, identityKernal);
 		const smoothed = smooth(i, j)
 		return doubleOriginal - smoothed;
 	}
@@ -146,7 +141,7 @@ const FilteredCanvas = ({ imageRef }) => {
 		setImageData(context.getImageData(0, 0, width, height).data)
 	}
 
-	const draw = () => {
+	const grayscale = () => {
 		const currentCanvas = canvas.current;
 		const context = currentCanvas.getContext('2d')
 
@@ -172,7 +167,7 @@ const FilteredCanvas = ({ imageRef }) => {
 			<div>
 				<button onClick={() => reset()}>Reset</button>
 				<span> | </span>
-				<button onClick={() => draw()}>Grayscale</button>
+				<button onClick={() => grayscale()}>Grayscale</button>
 				<button onClick={() => convolve(sobel)}>Sobel</button>
 				<button onClick={() => convolve(smooth)}>Smooth</button>
 				<button onClick={() => convolve(sharpen)}>Sharpen</button>
