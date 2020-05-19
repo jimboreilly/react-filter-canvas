@@ -48,10 +48,12 @@ const FilteredCanvas = ({ imageRef }) => {
 
 	const getConvulotionAreaAboutAnchor = (x, y) => {
 		const anchor = getPixelStartIndex(x, y)
+		const index = (i, j) => anchor + (i * (width * 4)) + (j * 4);
+
 		return [
-			[anchor - (width * 4) - 4, anchor - (width * 4), anchor - (width * 4) + 4],
-			[anchor - 4, anchor, anchor + 4],
-			[anchor + (width * 4) - 4, anchor + (width * 4), anchor + (width * 4) + 4]
+			[index(-1, -1), index(-1, 0), index(-1, 1)],
+			[index(0, -1), index(0, 0), index(0, 1)],
+			[index(1, -1), index(1, 0), index(1, 1)]
 		]
 	}
 
